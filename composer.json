@@ -1,0 +1,20 @@
+{
+    "name": "najidev/openapi",
+    "type": "library",
+    "require": {
+        "php": "^8.0",
+        "phpunit/phpunit": "^9.5",
+        "symfony/yaml": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "NajiDev\\JsonTree\\": "json-tree/src",
+            "NajiDevTests\\JsonTree\\": "json-tree/tests",
+
+            "NajiDev\\Openapi\\Model\\": "models/src",
+
+            "NajiDev\\Openapi\\Parser\\": "parser/src",
+            "NajiDevTests\\Openapi\\Parser\\": "parser/tests"
+        }
+    }
+}
