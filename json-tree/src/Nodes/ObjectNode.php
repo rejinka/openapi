@@ -32,7 +32,7 @@ final class ObjectNode implements Node
         return array_key_exists($key, $this->map);
     }
 
-    public function get(string $key): ?Node
+    public function get(string $key): Node
     {
         return $this->map[$key] ?? throw new OutOfBoundsException();
     }

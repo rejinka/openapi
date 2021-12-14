@@ -4,16 +4,16 @@ declare(strict_types = 1);
 namespace NajiDevTests\Openapi\Parser\Parser;
 
 use NajiDev\JsonTree\Nodes;
-use NajiDev\Openapi\Model;
-use NajiDev\Openapi\Parser\Error\ExpectedMapNode;
+use NajiDev\Openapi\Model\Info;
 use NajiDev\Openapi\Parser\Error\MissingProperty;
+use NajiDev\Openapi\Parser\Error\UnexpectedNodeType;
 use NajiDev\Openapi\Parser\Exception\NotParsableException;
-use NajiDev\Openapi\Parser\Parser\InfoParser;
+use NajiDev\Openapi\Parser\Parser\Info\InfoParser;
 use NajiDev\Openapi\Parser\Parser\OpenApiParserImpl;
 use NajiDev\Openapi\Parser\Path;
-use PHPUnit\Framework\TestCase;
+use NajiDev\Openapi\Parser\Test\ParserTestCase;
 
-final class OpenApiParserTestCase extends TestCase
+final class OpenApiParserTest extends ParserTestCase
 {
 
     private InfoParser $infoParser;
@@ -26,7 +26,7 @@ final class OpenApiParserTestCase extends TestCase
 
         $this->unit = new OpenApiParserImpl(
             $this->infoParser = $this->createConfiguredMock(InfoParser::class, [
-                '__invoke' => new Model\Info('', ''),
+                '__invoke' => new Info\Info('a title', '3.1.0'),
             ])
         );
     }
@@ -38,13 +38,10 @@ final class OpenApiParserTestCase extends TestCase
     {
         $given = new Nodes\NullNode();
 
-        $this->expectExceptionObject(
-            new NotParsableException(
-                new ExpectedMapNode(Path::root())
-            )
+        $this->expectParsingError(
+            fn () => $this->unit->__invoke($given),
+            new UnexpectedNodeType(Path::root(), [Nodes\ObjectNode::class], $given),
         );
-
-        $this->unit->__invoke($given);
     }
 
     /**
@@ -58,7 +55,7 @@ final class OpenApiParserTestCase extends TestCase
             ],
         );
 
-        $expected = new Model\OpenApi(
+        $expected = new \NajiDev\Openapi\Model\OpenApi(
             $this->infoParser->__invoke(new Nodes\NullNode()),
         );
 
@@ -72,13 +69,10 @@ final class OpenApiParserTestCase extends TestCase
     {
         $given = new Nodes\ObjectNode();
 
-        $this->expectExceptionObject(
-            new NotParsableException(
-                new MissingProperty(Path::fromString('/info'))
-            )
+        $this->expectParsingError(
+            fn () => $this->unit->__invoke($given),
+            new MissingProperty(Path::fromString('/info'))
         );
-
-        $this->unit->__invoke($given);
     }
 
     /**
@@ -95,14 +89,17 @@ final class OpenApiParserTestCase extends TestCase
                 )
             );
 
-        $this->expectExceptionObject(
-            new NotParsableException(
-                new MissingProperty(Path::fromString('/info/version')),
-                new MissingProperty(Path::fromString('/info/title')),
-            )
+        $given = new Nodes\ObjectNode(
+            [
+                'info' => new Nodes\NullNode(),
+            ],
         );
 
-        $this->unit->__invoke(new Nodes\ObjectNode());
+        $this->expectParsingError(
+            fn () => $this->unit->__invoke($given),
+            new MissingProperty(Path::fromString('/info/version')),
+            new MissingProperty(Path::fromString('/info/title')),
+        );
     }
 
 }

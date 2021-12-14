@@ -29,7 +29,7 @@ final class ListNode implements Node
 
     public function setNodes(Node ...$nodes): void
     {
-        $this->nodes = $nodes;
+        $this->nodes = array_values($nodes);
     }
 
 }

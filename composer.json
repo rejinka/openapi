@@ -3,7 +3,6 @@
     "type": "library",
     "require": {
         "php": "^8.0",
-        "phpunit/phpunit": "^9.5",
         "symfony/yaml": "^6.0"
     },
     "autoload": {
@@ -16,5 +15,9 @@
             "NajiDev\\Openapi\\Parser\\": "parser/src",
             "NajiDevTests\\Openapi\\Parser\\": "parser/tests"
         }
+    },
+    "require-dev": {
+        "vimeo/psalm": "^4.15",
+        "phpunit/phpunit": "^9.5"
     }
 }

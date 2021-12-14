@@ -5,7 +5,9 @@ namespace NajiDev\Openapi\Parser;
 
 use NajiDev\JsonTree\Node;
 use NajiDev\Openapi\Model\OpenApi;
-use NajiDev\Openapi\Parser\Parser\InfoParserImpl;
+use NajiDev\Openapi\Parser\Parser\Info\ContactParserImpl;
+use NajiDev\Openapi\Parser\Parser\Info\InfoParserImpl;
+use NajiDev\Openapi\Parser\Parser\Info\LicenseParserImpl;
 use NajiDev\Openapi\Parser\Parser\OpenApiParser;
 use NajiDev\Openapi\Parser\Parser\OpenApiParserImpl;
 
@@ -17,7 +19,10 @@ final class Parser
     public function __construct()
     {
         $this->parser = new OpenApiParserImpl(
-            new InfoParserImpl(),
+            new InfoParserImpl(
+                new ContactParserImpl(),
+                new LicenseParserImpl(),
+            ),
         );
     }
 

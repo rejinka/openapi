@@ -5,11 +5,11 @@ namespace NajiDev\Openapi\Parser\Parser;
 
 use NajiDev\JsonTree\Node;
 use NajiDev\JsonTree\Nodes\ObjectNode;
-use NajiDev\Openapi\Model\Info;
 use NajiDev\Openapi\Model\OpenApi;
 use NajiDev\Openapi\Parser\Error\MissingProperty;
+use NajiDev\Openapi\Parser\Error\UnexpectedNodeType;
 use NajiDev\Openapi\Parser\Exception\NotParsableException;
-use NajiDev\Openapi\Parser\Error\ErrorList;
+use NajiDev\Openapi\Parser\Parser\Info\InfoParser;
 use NajiDev\Openapi\Parser\Path;
 
 final class OpenApiParserImpl implements OpenApiParser
@@ -22,13 +22,13 @@ final class OpenApiParserImpl implements OpenApiParser
 
     public function __invoke(Node $node): OpenApi
     {
-        $errors = new ErrorList();
-
         if (!$node instanceof ObjectNode) {
-            $errors->unexpectedType(Path::root());
-
-            throw $errors->toException();
+            throw new NotParsableException(
+                new UnexpectedNodeType(Path::root(), [ObjectNode::class], $node),
+            );
         }
+
+        $errors = new NotParsableException();
 
         try {
             $info = $this->infoParser->__invoke($node->get('info'));
@@ -38,11 +38,9 @@ final class OpenApiParserImpl implements OpenApiParser
             $errors->catch($e, Path::fromString('/info'));
         }
 
-        if (!$errors->empty()) {
-            throw $errors->toException();
-        }
+        $errors->throwIfNotEmpty();
 
-        assert(null === $info || $info instanceof Info);
+        assert(isset($info));
 
         return new OpenApi($info);
     }

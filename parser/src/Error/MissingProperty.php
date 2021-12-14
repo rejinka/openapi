@@ -10,4 +10,5 @@ final class MissingProperty extends Error
     {
         return 'Expected existing path ' . $this->getPath();
     }
+
 }

@@ -7,18 +7,13 @@ final class OpenApi
 {
 
     public function __construct(
-        private Info $info,
+        private Info\Info $info,
     ) {
     }
 
-    public function getInfo(): Info
+    public function getInfo(): Info\Info
     {
         return $this->info;
-    }
-
-    public function setInfo(Info $info): void
-    {
-        $this->info = $info;
     }
 
 }

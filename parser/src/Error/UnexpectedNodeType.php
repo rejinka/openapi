@@ -3,30 +3,42 @@ declare(strict_types = 1);
 
 namespace NajiDev\Openapi\Parser\Error;
 
+use NajiDev\JsonTree\Node;
+use NajiDev\JsonTree\Nodes\ObjectNode;
 use NajiDev\Openapi\Parser\Path;
 
 final class UnexpectedNodeType extends Error
 {
 
+    /**
+     * @param Path                $path
+     * @param array<class-string> $allowed
+     * @param Node                $node
+     */
     public function __construct(
-        Path $path,
-        private string $desired,
-        private mixed $value,
+        Path          $path,
+        private array $allowed,
+        private Node  $node,
     ) {
         parent::__construct($path);
     }
 
-    public function getDesired(): string
+    public static function objectExpected(Path $path, Node $node): self
     {
-        return $this->desired;
+        return new self($path, [ObjectNode::class], $node);
     }
 
-    public function getValue(): mixed
+    public function getAllowed(): array
     {
-        return $this->value;
+        return $this->allowed;
     }
 
-    function getDescription(): string
+    public function getNode(): Node
+    {
+        return $this->node;
+    }
+
+    public function getDescription(): string
     {
         return 'Expected to be type xy';
     }

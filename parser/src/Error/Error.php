@@ -27,6 +27,6 @@ abstract class Error
         return $instance;
     }
 
-    abstract function getDescription(): string;
+    abstract public function getDescription(): string;
 
 }

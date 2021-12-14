@@ -12,7 +12,11 @@ final class Reader
 
     public function fromJson(string $json): Node
     {
-        $decoded = json_decode($json);
+        /** @var mixed $decoded */
+        $decoded = json_decode(
+            $json,
+            flags: JSON_THROW_ON_ERROR
+        );
 
         return self::read($decoded);
     }
@@ -43,7 +47,7 @@ final class Reader
         }
 
         if (is_array($value)) {
-            /** @var $value list<mixed> */
+            /** @var list<mixed> $value */
             return new ListNode(
                 ...
                 array_map(
